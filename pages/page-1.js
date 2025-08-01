@@ -3,12 +3,15 @@ import { Table } from "antd";
 
 const MappingTable = () => {
   const [data, setData] = useState([]);
+const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    const fetchMappings = async () => {
-      const res = await fetch("/api/product");
-      const json = await res.json();
-      setData(json);
+
+useEffect(() => {
+  const fetchMappings = async () => {
+    const res = await fetch("/api/product");
+    const json = await res.json();
+    setData(json);
+    setMounted(true); // supaya Table hanya render di client, menghindari SSR CSS flicker
     };
     fetchMappings();
   }, []);
@@ -38,12 +41,18 @@ const MappingTable = () => {
   ];
 
   return (
-    <Table
-      rowKey="id"
-      columns={columns}
-      dataSource={data}
-      pagination={{ pageSize: 5 }}
-    />
+    <div className="bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl rounded-2xl border border-white/20 p-6 relative overflow-hidden">
+       {mounted && (
+      <Table
+        rowKey="id"
+        columns={columns}
+        dataSource={data}
+        pagination={{ pageSize: 5 }}
+        className="custom-ant-table"
+      />
+       )}
+     
+    </div>
   );
 };
 
